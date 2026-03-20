@@ -12,6 +12,12 @@ namespace ToySerialController
     public partial class TCodeDevice : IDevice
     {
         protected readonly float[] XTarget, RTarget, ETarget;
+
+        public void SetTargets(float x0, float x1, float x2, float r0, float r1, float r2)
+        {
+            XTarget[0] = x0; XTarget[1] = x1; XTarget[2] = x2;
+            RTarget[0] = r0; RTarget[1] = r1; RTarget[2] = r2;
+        }
         protected readonly float[] XCmd, RCmd, ECmd;
         protected readonly float[] LastXCmd, LastRCmd, LastECmd;
         protected readonly JSONStorableFloat[] XParam, RParam, EParam;
@@ -103,7 +109,7 @@ namespace ToySerialController
         public void RecordValues(IDeviceRecorder recorder)
             => recorder?.RecordValues(XCmd[0], XCmd[1], XCmd[2], RCmd[0], RCmd[1], RCmd[2]);
 
-        public void UpdateValues(IOutputTarget outputTarget)
+        public virtual void UpdateValues(IOutputTarget outputTarget)
         {
             if (_lastNoCollisionSmoothingEnabled)
             {

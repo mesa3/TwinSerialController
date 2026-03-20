@@ -80,12 +80,14 @@ namespace ToySerialController
 
             var motionSources = new List<string>
             {
-                "Male + Female", "Asset + Female", "Dildo + Female",
+                "Male + Female", "Male + Feet", "Asset + Female", "Dildo + Female",
                 "Male + Asset", "Male + Male", "Asset + Male", "Dildo + Male",
                 "Animation Pattern", "Range Test"
             };
             MotionSourceChooser = _group.CreatePopup("Plugin:MotionSourceChooser", "Select motion source", motionSources, "Male + Female", MotionSourceChooserCallback);
 
+            var devices = new System.Collections.Generic.List<string> { "T-code", "Dual OSR" };
+            _group.CreatePopup("Plugin:DeviceChooser", "Select Device", devices, "T-code", DeviceChooserCallback);
             DeviceChooserCallback("T-code");
             MotionSourceChooserCallback("Male + Female");
         }
@@ -144,7 +146,11 @@ namespace ToySerialController
             _device?.Dispose();
             _device = null;
 
-            _device = new TCodeDevice();
+            if (s == "Dual OSR")
+                _device = new Device.DualOsr6Device();
+            else
+                _device = new TCodeDevice();
+
             _device.CreateUI(_builder);
         }
 
@@ -155,6 +161,8 @@ namespace ToySerialController
 
             if (s == "Male + Female")
                 _motionSource = new CompositeMotionSource(new MaleReference(), new FemaleTarget());
+            else if (s == "Male + Feet")
+                _motionSource = new DualFeetMotionSource(new MaleReference(), new FemaleFeetTarget("Left Foot"), new FemaleFeetTarget("Right Foot"));
             else if (s == "Asset + Female")
                 _motionSource = new CompositeMotionSource(new AssetReference(), new FemaleTarget());
             else if (s == "Dildo + Female")
@@ -195,7 +203,8 @@ namespace ToySerialController
             {
                 ["None"] = null,
                 ["Serial"] = new SerialOutputTarget(),
-                ["Udp"] = new UdpOutputTarget()
+                ["Udp"] = new UdpOutputTarget(),
+                ["Dual Udp"] = new DualUdpOutputTarget()
             };
             _uiGroups = new Dictionary<string, UIGroup>();
         }
