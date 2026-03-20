@@ -454,27 +454,47 @@ namespace ToySerialController
         public float Evaluate(float[] xTarget, float[] rTarget)
         {
             var t = 0.0f;
-            if (CurveXAxisChooser.val == "L0") t = Mathf.Clamp01(xTarget[0]);
-            else if (CurveXAxisChooser.val == "L1") t = xTarget[1];
-            else if (CurveXAxisChooser.val == "L2") t = xTarget[2];
-            else if (CurveXAxisChooser.val == "L1+L2") t = Mathf.Clamp01(Mathf.Sqrt(xTarget[1] * xTarget[1] + xTarget[2] * xTarget[2]));
-            else if (CurveXAxisChooser.val == "R0") t = Mathf.Clamp01(0.5f + rTarget[0]);
-            else if (CurveXAxisChooser.val == "R1") t = Mathf.Clamp01(Mathf.Abs(rTarget[1]));
-            else if (CurveXAxisChooser.val == "R2") t = Mathf.Clamp01(Mathf.Abs(rTarget[2]));
-            else if (CurveXAxisChooser.val == "R1+R2") t = Mathf.Clamp01(Mathf.Sqrt(rTarget[1] * rTarget[1] + rTarget[2] * rTarget[2]));
-            else if (CurveXAxisChooser.val == "L0+R1+R2") t = Mathf.Clamp01(Mathf.Sqrt(xTarget[0] * xTarget[0] + rTarget[1] * rTarget[1] + rTarget[2] * rTarget[2]));
-            else if (CurveXAxisChooser.val == "Time")
+            switch (CurveXAxisChooser.val)
             {
-                var timeLimit = TimeSpanSlider.val;
-                var time = TimeScrubberSlider.val;
-                if (TineRunningToggle.val)
-                    time += Time.deltaTime;
+                case "L0":
+                    t = Mathf.Clamp01(xTarget[0]);
+                    break;
+                case "L1":
+                    t = xTarget[1];
+                    break;
+                case "L2":
+                    t = xTarget[2];
+                    break;
+                case "L1+L2":
+                    t = Mathf.Clamp01(Mathf.Sqrt(xTarget[1] * xTarget[1] + xTarget[2] * xTarget[2]));
+                    break;
+                case "R0":
+                    t = Mathf.Clamp01(0.5f + rTarget[0]);
+                    break;
+                case "R1":
+                    t = Mathf.Clamp01(Mathf.Abs(rTarget[1]));
+                    break;
+                case "R2":
+                    t = Mathf.Clamp01(Mathf.Abs(rTarget[2]));
+                    break;
+                case "R1+R2":
+                    t = Mathf.Clamp01(Mathf.Sqrt(rTarget[1] * rTarget[1] + rTarget[2] * rTarget[2]));
+                    break;
+                case "L0+R1+R2":
+                    t = Mathf.Clamp01(Mathf.Sqrt(xTarget[0] * xTarget[0] + rTarget[1] * rTarget[1] + rTarget[2] * rTarget[2]));
+                    break;
+                case "Time":
+                    var timeLimit = TimeSpanSlider.val;
+                    var time = TimeScrubberSlider.val;
+                    if (TineRunningToggle.val)
+                        time += Time.deltaTime;
 
-                if (time > timeLimit)
-                    time = TimeLoopingToggle.val ? 0 : timeLimit;
+                    if (time > timeLimit)
+                        time = TimeLoopingToggle.val ? 0 : timeLimit;
 
-                t = Mathf.Clamp(time, 0, timeLimit);
-                TimeScrubberSlider.val = t;
+                    t = Mathf.Clamp(time, 0, timeLimit);
+                    TimeScrubberSlider.val = t;
+                    break;
             }
 
             _editor.SetScrubberPosition(_storable, t);
